@@ -2,12 +2,15 @@
 
 <!-- Insert small description -->
 
-<strong>Technologies Used</strong>
-React Native: Framework for building the mobile app.
-Expo: Managed workflow for React Native.
-Expo Router: Simplified routing for navigating between screens.
-TypeScript: Language for type-safety and enhanced developer experience.
-Setup and Installation
+<h3>Technologies Used</h3>
+<br/>
+React Native: Framework for building the mobile app. <br/>
+Expo: Managed workflow for React Native.<br/>
+Expo Router: Simplified routing for navigating between screens.<br/>
+TypeScript: Language for type-safety and enhanced developer experience.<br/>
+
+<br/>
+<h3>Setup and Installation</h3>
 
 1. Clone the repository
 
