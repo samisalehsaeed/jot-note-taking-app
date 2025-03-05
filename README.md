@@ -12,23 +12,20 @@ TypeScript: Language for type-safety and enhanced developer experience.<br/>
 <br/>
 <h3>Setup and Installation</h3>
 
-1. <strong>Clone the repository</strong><br/>
+1. <strong>Clone the repository</strong>
 
 ```bash
  git clone repo-url
  cd jot-app
 ```
 
-2. <strong>Install dependencies</strong><br/>
-   Run the following command to install necessary packages:
+2. <strong>Install dependencies</strong>
 
 ```bash
  npm install
 ```
 
-3. <strong>Run the app</strong><br/>
-   <br/>
-   To start the development server and run the app, use:
+3. <strong>Run the app</strong>
 
 ```bash
  npx expo start
