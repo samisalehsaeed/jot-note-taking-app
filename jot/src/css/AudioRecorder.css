@@ -1,0 +1,7 @@
+button {
+  background-color: rgb(222, 127, 127);
+  display: flex;
+}
+.audio-recorder {
+  display: flex;
+}

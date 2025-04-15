@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import "../css/AudioRecorder.css";
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -27,7 +28,7 @@ const AudioRecorder = () => {
   };
 
   return (
-    <div>
+    <div className="audio-recorder">
       <button onClick={isRecording ? stopRecording : startRecording}>
         {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
