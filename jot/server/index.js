@@ -20,7 +20,7 @@ app.post("/transcribe", async (req, res) => {
     };
     const config = {
       encoding: "LINEAR16",
-      sampleRateHertz: 16000,
+      sampleRateHertz: 16000, //16000
       languageCode: "en-UK",
     };
     const request = {
@@ -43,3 +43,5 @@ app.listen(port, () => {
   //confirms server is running
   console.log(`Server running on http://localhost:${port}`);
 });
+
+// rs to restart nodemon server
