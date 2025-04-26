@@ -16,11 +16,11 @@ app.post("/transcribe", async (req, res) => {
   try {
     const { audioContent } = req.body; //stores the audio content from frontend encoded as a base64 string
     const audio = {
-      content: audioContent, //prepares the audio for the api to transcribe
+      content: audioContent, //stores and prepares the audio for the api to transcribe
     };
     const config = {
-      encoding: "LINEAR16",
-      sampleRateHertz: 16000, //16000
+      encoding: "WEBM_OPUS",
+      sampleRateHertz: 48000, //16000
       languageCode: "en-UK",
     };
     const request = {

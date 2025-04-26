@@ -57,7 +57,7 @@ const AudioRecorder = () => {
       </button>
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
       <button onClick={transcribeAudio}>Transcribe</button>
-      {transcript && <p>Transcript: {transcript}</p>}
+      <h1>{transcript && <p>Transcript: {transcript}</p>}</h1>
 
       {/* use audio blob and transcribe through api, json key downloaded already */}
     </div>
