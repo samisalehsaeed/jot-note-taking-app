@@ -1,7 +1,16 @@
-button {
-  background-color: rgb(255, 255, 255);
-  display: flex;
-}
 .audio-recorder {
-  display: flex;
+  /* display: flex; */
+}
+
+.record-btn {
+  background-color: rgba(255, 255, 255, 0);
+  /* make transparent later */
+  border-style: none;
+}
+.record-btn :hover {
+  background-color: aqua;
+}
+
+.record-icon {
+  height: 15vh;
 }

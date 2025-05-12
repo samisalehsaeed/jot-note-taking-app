@@ -52,13 +52,28 @@ const AudioRecorder = () => {
 
   return (
     <div className="audio-recorder">
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? "Stop Recording" : "Start Recording"}
+      {/* make it that when the recording is stopped the transcription is displayed auto */}
+      {/* add a potential loading screen too */}
+      {/* <form> */}
+      <button
+        className="record-btn"
+        onClick={isRecording ? stopRecording : startRecording}
+      >
+        {isRecording ? (
+          "Stop Recording"
+        ) : (
+          <img
+            className="record-icon"
+            src="https://cdn-icons-png.flaticon.com/128/25/25682.png"
+            alt="png-of-mic"
+          />
+        )}
       </button>
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
+      <br />
       <button onClick={transcribeAudio}>Transcribe</button>
       <h1>{transcript && <p>Transcript: {transcript}</p>}</h1>
-
+      {/* </form> */}
       {/* use audio blob and transcribe through api, json key downloaded already */}
     </div>
   );
