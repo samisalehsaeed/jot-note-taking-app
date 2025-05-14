@@ -23,19 +23,19 @@ const AudioRecorder = () => {
     setIsRecording(true);
   };
 
-  const stopRecording = () => {
+  //   const stopRecording = () => {};
+
+  const transcribeAudio = async () => {
+    const blobToBase64 = (blob) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(",")[1]); // remove the data:audio/wav;base64,...
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
     mediaRecorderRef.current.stop();
     setIsRecording(false);
-  };
-  const blobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(",")[1]); // remove the data:audio/wav;base64,...
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  };
-  const transcribeAudio = async () => {
     const base64Audio = await blobToBase64(audioBlob);
     const response = await fetch("http://localhost:5000/transcribe", {
       method: "POST",
@@ -54,10 +54,10 @@ const AudioRecorder = () => {
     <div className="audio-recorder">
       {/* make it that when the recording is stopped the transcription is displayed auto */}
       {/* add a potential loading screen too */}
-      {/* <form> */}
       <button
+        type="button"
         className="record-btn"
-        onClick={isRecording ? stopRecording : startRecording}
+        onClick={isRecording ? transcribeAudio : startRecording}
       >
         {isRecording ? (
           "Stop Recording"
@@ -69,11 +69,12 @@ const AudioRecorder = () => {
           />
         )}
       </button>
+      {/* test - remove */}
+      <br />
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
       <br />
-      <button onClick={transcribeAudio}>Transcribe</button>
+      {/* <button onClick={transcribeAudio}>Transcribe</button> */}
       <h1>{transcript && <p>Transcript: {transcript}</p>}</h1>
-      {/* </form> */}
       {/* use audio blob and transcribe through api, json key downloaded already */}
     </div>
   );
