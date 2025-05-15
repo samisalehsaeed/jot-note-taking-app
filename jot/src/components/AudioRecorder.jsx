@@ -29,7 +29,7 @@ const AudioRecorder = () => {
     const blobToBase64 = (blob) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(",")[1]); // remove the data:audio/wav;base64,...
+        reader.onloadend = () => resolve(reader.result.split(",")[1]);
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
