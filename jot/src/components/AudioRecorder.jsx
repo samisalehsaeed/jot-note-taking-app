@@ -9,7 +9,7 @@ const AudioRecorder = () => {
   const [transcript, setTranscript] = useState("");
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); //enables mic on browser
     mediaRecorderRef.current = new MediaRecorder(stream);
     mediaRecorderRef.current.ondataavailable = (event) => {
       audioChunksRef.current.push(event.data);
@@ -35,7 +35,7 @@ const AudioRecorder = () => {
       });
     };
     mediaRecorderRef.current.stop();
-    setIsRecording(false);
+    setIsRecording(false); // check if this is the reason why you cannot transcribe
     const base64Audio = await blobToBase64(audioBlob);
     const response = await fetch("http://localhost:5000/transcribe", {
       method: "POST",
