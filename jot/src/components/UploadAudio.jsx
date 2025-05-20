@@ -1,31 +1,30 @@
-import { useState, useRef } from "react";
-
-//Upload Media file convert to base 64 and transcribe
-
-//Basic req
-
-//1. Allow media to be uploaded, strictly mp4 for now✅
-//2. Convert said media to audio/wav
-//3. Put audio file through transcription
-//4. Display transcription
-
-//consider WAV
+import { useState } from "react";
 
 export default function UploadAudio() {
   const [file, setFile] = useState(null);
-  //   const [errorFormatMessage, setErrorFormatMessage] = useState("");
-  const [audioBlob, setAudioBlob] = useState(null);
-  const audioChunksRef = useRef([]);
+  const [transcription, setTranscription] = useState("");
+  //   const [audioBlob, setAudioBlob] = useState(null);
 
-  function handleUpload() {
+  const handleUpload = async () => {
     if (!file) {
       console.log("No file selected.");
       return;
     }
-    const fd = new FormData();
-    fd.append("file", file);
-    console.log(file);
-  }
+    const formData = new FormData();
+    formData.append("file", file);
+    // setAudioBlob(file);
+    try {
+      const res = await fetch("http://localhost:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      console.log("Transcription: ", data.transcription);
+      setTranscription(data.transcription);
+    } catch (err) {
+      console.error("Upload error: ", err);
+    }
+  };
 
   return (
     <>
@@ -37,6 +36,8 @@ export default function UploadAudio() {
         }}
       />
       <button onClick={handleUpload}>Upload</button>
+
+      <h1>{transcription && <p>Transcript: {transcription}</p>}</h1>
       {/* <h1>{errorFormatMessage}</h1> */}
     </>
   );
