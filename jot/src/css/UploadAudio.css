@@ -1,0 +1,11 @@
+.selectFile {
+  display: none;
+}
+.selectFileIcon {
+  height: 10vh;
+  padding-right: 2vh;
+}
+.uploadIcon {
+  border-style: none;
+  height: 4vh;
+}

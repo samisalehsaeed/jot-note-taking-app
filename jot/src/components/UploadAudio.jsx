@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "../css/UploadAudio.css";
+import upload from "../assets/upload.svg";
 
 export default function UploadAudio() {
   const [file, setFile] = useState(null);
@@ -29,14 +31,26 @@ export default function UploadAudio() {
   return (
     <>
       <input
+        className="selectFile"
         type="file"
+        id="input"
         accept=".mp4"
         onChange={(e) => {
           setFile(e.target.files[0]);
         }}
       />
-      <button onClick={handleUpload}>Upload</button>
+      <label htmlFor="input">
+        <img
+          className="selectFileIcon"
+          src="https://cdn-icons-png.flaticon.com/128/2572/2572200.png"
+          alt="selectAudioFile-icon"
+        />
+        {/* Select an audio file pleases */}
+      </label>
 
+      <button onClick={handleUpload}>
+        <img className="uploadIcon" src={upload} alt="upload-icon" />
+      </button>
       <h1>{transcription && <p>Transcript: {transcription}</p>}</h1>
       {/* <h1>{errorFormatMessage}</h1> */}
     </>
