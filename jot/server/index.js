@@ -6,6 +6,7 @@ const multer = require("multer");
 const { exec } = require("child_process");
 const path = require("path");
 const { readFile } = require("fs/promises");
+const fs = require("fs/promises");
 
 const { SpeechClient } = require("@google-cloud/speech");
 const { stderr } = require("process");
@@ -80,6 +81,8 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     const transcription = response.results
       .map((result) => result.alternatives[0].transcript)
       .join("\n");
+    await fs.unlink(inputPath);
+    await fs.unlink(outputPath);
 
     res.json({ transcription });
   } catch (error) {
