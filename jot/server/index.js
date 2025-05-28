@@ -28,6 +28,7 @@ app.post("/transcribe", async (req, res) => {
       encoding: "WEBM_OPUS",
       sampleRateHertz: 48000, //16000
       languageCode: "en-UK",
+      enableAutomaticPunctuation: true,
     };
     const request = {
       audio,
@@ -72,6 +73,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       encoding: "WEBM_OPUS",
       sampleRateHertz: 48000, //16000
       languageCode: "en-UK",
+      enableAutomaticPunctuation: true,
     };
     const request = {
       audio,
