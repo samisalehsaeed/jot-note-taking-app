@@ -2,6 +2,7 @@ import "./App.css";
 
 import AudioRecorder from "./components/AudioRecorder";
 import UploadAudio from "./components/UploadAudio";
+import SaveTranscript from "./components/SaveTranscript";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <div className="column2">
           <AudioRecorder />
           <UploadAudio />
+          <SaveTranscript />
         </div>
         <div className="column3" />
       </div>
