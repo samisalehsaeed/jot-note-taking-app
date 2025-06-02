@@ -5,7 +5,7 @@ import upload from "../assets/upload.svg";
 export default function UploadAudio() {
   const [file, setFile] = useState(null);
   const [transcription, setTranscription] = useState("");
-  //   const [audioBlob, setAudioBlob] = useState(null);
+  // const [audioBlob, setAudioBlob] = useState(null);
 
   const handleUpload = async () => {
     if (!file) {

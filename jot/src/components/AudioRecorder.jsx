@@ -1,5 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, createContext } from "react";
 import "../css/AudioRecorder.css";
+import SaveTranscript from "./SaveTranscript";
+
+export const TranscriptContext = createContext();
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -23,7 +26,10 @@ const AudioRecorder = () => {
     setIsRecording(true);
   };
 
-  //   const stopRecording = () => {};
+  const stopRecording = () => {
+    mediaRecorderRef.current.stop();
+    setIsRecording(false); // check if this is the reason why you cannot transcribe
+  };
 
   const transcribeAudio = async () => {
     const blobToBase64 = (blob) => {
@@ -34,8 +40,7 @@ const AudioRecorder = () => {
         reader.readAsDataURL(blob);
       });
     };
-    mediaRecorderRef.current.stop();
-    setIsRecording(false); // check if this is the reason why you cannot transcribe
+
     const base64Audio = await blobToBase64(audioBlob);
     const response = await fetch("http://localhost:5000/transcribe", {
       method: "POST",
@@ -57,7 +62,7 @@ const AudioRecorder = () => {
       <button
         type="button"
         className="record-btn"
-        onClick={isRecording ? transcribeAudio : startRecording}
+        onClick={isRecording ? stopRecording : startRecording}
       >
         {isRecording ? (
           "Stop Recording"
@@ -73,9 +78,13 @@ const AudioRecorder = () => {
       <br />
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
       <br />
-      {/* <button onClick={transcribeAudio}>Transcribe</button> */}
+      <button onClick={transcribeAudio}>Transcribe Audio</button>
       <h1>{transcript && <p>Transcript: {transcript}</p>}</h1>
+      <TranscriptContext.Provider value={transcript}>
+        <SaveTranscript />
+      </TranscriptContext.Provider>
       {/* use audio blob and transcribe through api, json key downloaded already */}
+      <br />
     </div>
   );
 };
