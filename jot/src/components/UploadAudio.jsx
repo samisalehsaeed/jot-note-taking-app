@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import "../css/UploadAudio.css";
 import upload from "../assets/upload.svg";
+import SaveTranscript from "./SaveTranscript";
+
+export const UploadTranscriptContext = createContext();
 
 export default function UploadAudio() {
   const [file, setFile] = useState(null);
@@ -52,6 +55,9 @@ export default function UploadAudio() {
         <img className="uploadIcon" src={upload} alt="upload-icon" />
       </button>
       <h1>{transcription && <p>Transcript: {transcription}</p>}</h1>
+      <UploadTranscriptContext.Provider value={transcription}>
+        <SaveTranscript />
+      </UploadTranscriptContext.Provider>
       {/* <h1>{errorFormatMessage}</h1> */}
     </>
   );

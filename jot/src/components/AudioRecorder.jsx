@@ -2,7 +2,7 @@ import { useState, useRef, createContext } from "react";
 import "../css/AudioRecorder.css";
 import SaveTranscript from "./SaveTranscript";
 
-export const TranscriptContext = createContext();
+export const AudioTranscriptContext = createContext();
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -80,9 +80,9 @@ const AudioRecorder = () => {
       <br />
       <button onClick={transcribeAudio}>Transcribe Audio</button>
       <h1>{transcript && <p>Transcript: {transcript}</p>}</h1>
-      <TranscriptContext.Provider value={transcript}>
+      <AudioTranscriptContext.Provider value={transcript}>
         <SaveTranscript />
-      </TranscriptContext.Provider>
+      </AudioTranscriptContext.Provider>
       {/* use audio blob and transcribe through api, json key downloaded already */}
       <br />
     </div>

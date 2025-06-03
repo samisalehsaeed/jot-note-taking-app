@@ -1,12 +1,14 @@
 import { saveAs } from "file-saver";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { useContext } from "react";
-import { TranscriptContext } from "./AudioRecorder";
+import { AudioTranscriptContext } from "./AudioRecorder";
+import { UploadTranscriptContext } from "./UploadAudio";
 
 // Documents contain sections, you can have multiple sections per document, go here to learn more about sections
 // This simple example will only contain one section
 export default function SaveTranscript() {
-  const docTranscript = useContext(TranscriptContext);
+  const audioDocTranscript = useContext(AudioTranscriptContext);
+  const uploadDocTranscript = useContext(UploadTranscriptContext);
   const createDoc = async () => {
     const doc = new Document({
       sections: [
@@ -16,7 +18,7 @@ export default function SaveTranscript() {
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `${docTranscript}`,
+                  text: `${audioDocTranscript || uploadDocTranscript}`,
                   bold: true,
                 }),
               ],
