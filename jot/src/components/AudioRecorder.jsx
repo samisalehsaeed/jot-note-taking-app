@@ -59,6 +59,8 @@ const AudioRecorder = () => {
     <div className="audio-recorder">
       {/* make it that when the recording is stopped the transcription is displayed auto */}
       {/* add a potential loading screen too */}
+      <h1 className="title">JOT</h1>
+      <br />
       <button
         type="button"
         className="record-btn"
