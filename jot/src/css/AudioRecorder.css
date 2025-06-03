@@ -14,3 +14,25 @@
 .record-icon {
   height: 15vh;
 }
+
+.transcript-paper {
+  width: 100%;
+  max-width: 600px;
+  height: 395px;
+  padding: 10px 15px;
+  line-height: 2rem;
+  font-size: 0.6rem;
+  text-align: left;
+  font-family: "Courier New", monospace;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    white,
+    white 1.9rem,
+    #c8d6e5 1.9rem,
+    #c8d6e5 2rem
+  );
+  border: 1px solid #ccc;
+  outline: none;
+  resize: none;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}

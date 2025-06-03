@@ -3,7 +3,6 @@
   justify-content: center;
 }
 
-.column1,
 .column3 {
   background-color: rgb(125, 132, 163);
   height: 100vh;
@@ -15,7 +14,7 @@
   width: 200vh;
   background-color: rgb(255, 255, 255);
   text-align: center;
-  padding-top: 10vh;
+  padding-top: 5vh;
   padding-left: 10vh;
   padding-right: 10vh;
 }

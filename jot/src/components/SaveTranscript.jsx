@@ -19,7 +19,6 @@ export default function SaveTranscript() {
               children: [
                 new TextRun({
                   text: `${audioDocTranscript || uploadDocTranscript}`,
-                  bold: true,
                 }),
               ],
             }),

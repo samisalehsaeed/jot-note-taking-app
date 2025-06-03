@@ -27,7 +27,7 @@ app.post("/transcribe", async (req, res) => {
     const config = {
       encoding: "WEBM_OPUS",
       sampleRateHertz: 48000, //16000
-      languageCode: "en-UK",
+      languageCode: "en-UK", //have a request sent to language code to update it, depending on what the user selects
       enableAutomaticPunctuation: true,
     };
     const request = {
@@ -35,9 +35,9 @@ app.post("/transcribe", async (req, res) => {
       config,
     };
     const [response] = await client.recognize(request);
-    const transcription = response.results
-      .map((result) => result.alternatives[0].transcript)
-      .join("\n");
+    const transcription = response.results.map(
+      (result) => result.alternatives[0].transcript
+    );
 
     res.json({ transcription }); //sends transcription to frontend
   } catch (error) {
