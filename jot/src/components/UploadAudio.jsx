@@ -55,9 +55,14 @@ export default function UploadAudio() {
         <img className="uploadIcon" src={upload} alt="upload-icon" />
       </button>
       <h1>{transcription && <p>Transcript: {transcription}</p>}</h1>
-      <UploadTranscriptContext.Provider value={transcription}>
-        <SaveTranscript />
-      </UploadTranscriptContext.Provider>
+      <br />
+      <br />
+      <div className="transcript-paper">
+        <h1>{transcription && <p>{transcription}</p>}</h1>
+        <UploadTranscriptContext.Provider value={transcription}>
+          <SaveTranscript />
+        </UploadTranscriptContext.Provider>
+      </div>
       {/* <h1>{errorFormatMessage}</h1> */}
     </>
   );

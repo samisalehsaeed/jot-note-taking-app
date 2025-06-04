@@ -7,6 +7,7 @@ const { exec } = require("child_process");
 const path = require("path");
 const { readFile } = require("fs/promises");
 const fs = require("fs/promises");
+const { spawn } = require("child_process");
 
 const { SpeechClient } = require("@google-cloud/speech");
 const { stderr } = require("process");
@@ -34,12 +35,28 @@ app.post("/transcribe", async (req, res) => {
       audio,
       config,
     };
-    const [response] = await client.recognize(request);
-    const transcription = response.results.map(
-      (result) => result.alternatives[0].transcript
-    );
 
-    res.json({ transcription }); //sends transcription to frontend
+    const [response] = await client.recognize(request);
+    const transcription = response.results
+      .map((result) => result.alternatives[0].transcript)
+      .join(" "); // ensures it's a single string
+
+    const spagModel = spawn("python3", ["spagModel.py", transcription]);
+
+    let result = "";
+    spagModel.stdout.on("data", (data) => {
+      result += data.toString();
+    });
+
+    spagModel.stderr.on("data", (data) => {
+      console.error("Error:", data.toString());
+    });
+
+    spagModel.on("close", () => {
+      res.json({ spaggedText: result.trim() });
+    });
+
+    // res.json({ transcription }); //sends transcription to frontend
   } catch (error) {
     console.error("API error: ", error);
     res.status(500).json({ error: "Failed to transcribe" });
@@ -73,7 +90,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       encoding: "WEBM_OPUS",
       sampleRateHertz: 48000, //16000
       languageCode: "en-UK",
-      enableAutomaticPunctuation: true,
+      // enableAutomaticPunctuation: true,
     };
     const request = {
       audio,

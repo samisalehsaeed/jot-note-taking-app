@@ -10,6 +10,7 @@ function App() {
       <div className="app-container">
         <Navigation />
         <div className="column2">
+          <h1 className="title">JOT</h1>
           <Routes>
             <Route path="/" element={<AudioRecorder />} />
             <Route path="/uploadaudio" element={<UploadAudio />} />

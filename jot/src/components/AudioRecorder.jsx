@@ -59,7 +59,6 @@ const AudioRecorder = () => {
     <div className="audio-recorder">
       {/* make it that when the recording is stopped the transcription is displayed auto */}
       {/* add a potential loading screen too */}
-      <h1 className="title">JOT</h1>
       <br />
       <button
         type="button"
@@ -76,19 +75,17 @@ const AudioRecorder = () => {
           />
         )}
       </button>
-      {/* test - remove */}
       <br />
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
       <br />
       <button onClick={transcribeAudio}>Transcribe Audio</button>
-      {/* Have the transcription appear on paper like box */}
 
-      <AudioTranscriptContext.Provider value={transcript}>
-        <SaveTranscript />
-      </AudioTranscriptContext.Provider>
       <br />
       <br />
       <div className="transcript-paper">
+        <AudioTranscriptContext.Provider value={transcript}>
+          <SaveTranscript />
+        </AudioTranscriptContext.Provider>
         <h1>{transcript && <p>{transcript}</p>}</h1>
       </div>
     </div>
