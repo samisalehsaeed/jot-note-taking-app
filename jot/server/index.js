@@ -41,20 +41,29 @@ app.post("/transcribe", async (req, res) => {
       .map((result) => result.alternatives[0].transcript)
       .join(" "); // ensures it's a single string
 
-    const spagModel = spawn("python3", ["spagModel.py", transcription]);
+    const axios = require("axios"); // install this if needed
 
-    let result = "";
-    spagModel.stdout.on("data", (data) => {
-      result += data.toString();
+    const spagResponse = await axios.post("http://localhost:8001/punctuate", {
+      text: transcription,
     });
 
-    spagModel.stderr.on("data", (data) => {
-      console.error("Error:", data.toString());
-    });
+    const spaggedText = spagResponse.data.punctuated;
+    res.json({ spaggedText });
 
-    spagModel.on("close", () => {
-      res.json({ spaggedText: result.trim() });
-    });
+    // const spagModel = spawn("python3", ["spagModel.py", transcription]);
+
+    // let result = "";
+    // spagModel.stdout.on("data", (data) => {
+    //   result += data.toString();
+    // });
+
+    // spagModel.stderr.on("data", (data) => {
+    //   console.error("Error:", data.toString());
+    // });
+
+    // spagModel.on("close", () => {
+    //   res.json({ spaggedText: result.trim() });
+    // });
 
     // res.json({ transcription }); //sends transcription to frontend
   } catch (error) {
