@@ -39,7 +39,7 @@ const AudioRecorder = () => {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    };
+    }; // change since deep speech doesnt accept base64
 
     const base64Audio = await blobToBase64(audioBlob);
     const response = await fetch("http://localhost:5000/transcribe", {

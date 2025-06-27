@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "deepspeech": "^0.9.3",
     "docx": "^9.5.0",
     "file-saver": "^2.0.5",
+    "memory-stream": "^1.0.0",
+    "node-wav": "^0.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.6.1"
+    "react-router-dom": "^7.6.1",
+    "sox-stream": "^2.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

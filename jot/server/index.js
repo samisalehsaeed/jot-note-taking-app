@@ -7,11 +7,34 @@ const { exec } = require("child_process");
 const path = require("path");
 const { readFile } = require("fs/promises");
 const fs = require("fs/promises");
-const { spawn } = require("child_process");
+// const { spawn } = require("child_process");
 
-const { SpeechClient } = require("@google-cloud/speech");
-const { stderr } = require("process");
-const client = new SpeechClient();
+// const { SpeechClient } = require("@google-cloud/speech");
+// const { stderr } = require("process");
+// const client = new SpeechClient();
+
+//DeepSpeech
+
+const DeepSpeech = require("deepspeech");
+const Fs = require("fs");
+const Sox = require("sox-stream");
+const MemoryStream = require("memory-stream");
+const Duplex = require("stream").Duplex;
+const Wav = require("node-wav");
+
+let modelPath = "./models/deepspeech-0.9.3-models.scorer";
+let scorerPath = "./models/deepspeech-0.9.3-models.scorer";
+
+let model = new DeepSpeech.Model(modelPath);
+let desiredSampleRate = model.sampleRate();
+model.enableExternalScorer(scorerPath);
+
+function bufferToStream(buffer) {
+  let stream = new Duplex();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
+}
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,50 +45,23 @@ app.use(express.json({ limit: "10mb" })); //json will be in the request body and
 app.post("/transcribe", async (req, res) => {
   try {
     const { audioContent } = req.body; //stores the audio content from frontend encoded as a base64 string
-    const audio = {
-      content: audioContent, //stores and prepares the audio for the api to transcribe
-    };
-    const config = {
-      encoding: "WEBM_OPUS",
-      sampleRateHertz: 48000, //16000
-      languageCode: "en-UK", //have a request sent to language code to update it, depending on what the user selects
-      enableAutomaticPunctuation: true,
-    };
-    const request = {
-      audio,
-      config,
-    };
-
-    const [response] = await client.recognize(request);
-    const transcription = response.results
-      .map((result) => result.alternatives[0].transcript)
-      .join(" "); // ensures it's a single string
-
-    const axios = require("axios"); // install this if needed
-
-    const spagResponse = await axios.post("http://localhost:8001/punctuate", {
-      text: transcription,
-    });
-
-    const spaggedText = spagResponse.data.punctuated;
-    res.json({ spaggedText });
-
-    // const spagModel = spawn("python3", ["spagModel.py", transcription]);
-
-    // let result = "";
-    // spagModel.stdout.on("data", (data) => {
-    //   result += data.toString();
-    // });
-
-    // spagModel.stderr.on("data", (data) => {
-    //   console.error("Error:", data.toString());
-    // });
-
-    // spagModel.on("close", () => {
-    //   res.json({ spaggedText: result.trim() });
-    // });
-
-    // res.json({ transcription }); //sends transcription to frontend
+    const audioBuffer = Buffer.from(audioContent, "base64"); // convert to buffer
+    // const config = {
+    //   encoding: "WEBM_OPUS",
+    //   sampleRateHertz: 48000, //16000
+    //   languageCode: "en-UK", //have a request sent to language code to update it, depending on what the user selects
+    //   enableAutomaticPunctuation: true,
+    // };
+    // const request = {
+    //   audio,
+    //   config,
+    // };
+    const transcription = model.stt(audioBuffer); //deepspeech transcription
+    res.json({ transcription }); //send transcription
+    // const [response] = await client.recognize(request);
+    // const transcription = response.results
+    //   .map((result) => result.alternatives[0].transcript)
+    //   .join(" ");
   } catch (error) {
     console.error("API error: ", error);
     res.status(500).json({ error: "Failed to transcribe" });
