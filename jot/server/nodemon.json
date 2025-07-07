@@ -1,9 +1,0 @@
-{
-    "watch": ["server"],           
-    "ignore": [
-      "venv",
-      "node_modules",
-      "**/__pycache__/**"
-    ]
-  }
-  
