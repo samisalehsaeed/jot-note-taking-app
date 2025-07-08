@@ -1,123 +1,131 @@
-//Server creation
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const { exec } = require("child_process");
+const { v4: uuidv4 } = require("uuid");
+const { spawn } = require("child_process");
+const fs = require("fs");
 const path = require("path");
-const { readFile } = require("fs/promises");
-const fs = require("fs/promises");
-// const { spawn } = require("child_process");
-
-// const { SpeechClient } = require("@google-cloud/speech");
-// const { stderr } = require("process");
-// const client = new SpeechClient();
-
-//DeepSpeech
-
-const DeepSpeech = require("deepspeech");
-const Fs = require("fs");
-const Sox = require("sox-stream");
-const MemoryStream = require("memory-stream");
-const Duplex = require("stream").Duplex;
-const Wav = require("node-wav");
-
-let modelPath = "./models/deepspeech-0.9.3-models.scorer";
-let scorerPath = "./models/deepspeech-0.9.3-models.scorer";
-
-let model = new DeepSpeech.Model(modelPath);
-let desiredSampleRate = model.sampleRate();
-model.enableExternalScorer(scorerPath);
-
-function bufferToStream(buffer) {
-  let stream = new Duplex();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
-}
 
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
-app.use(cors()); //connects frontend to backend
-app.use(express.json({ limit: "10mb" })); //json will be in the request body and only allow upto 10mb since base64 can be big
-
-app.post("/transcribe", async (req, res) => {
-  try {
-    const { audioContent } = req.body; //stores the audio content from frontend encoded as a base64 string
-    const audioBuffer = Buffer.from(audioContent, "base64"); // convert to buffer
-    // const config = {
-    //   encoding: "WEBM_OPUS",
-    //   sampleRateHertz: 48000, //16000
-    //   languageCode: "en-UK", //have a request sent to language code to update it, depending on what the user selects
-    //   enableAutomaticPunctuation: true,
-    // };
-    // const request = {
-    //   audio,
-    //   config,
-    // };
-    const transcription = model.stt(audioBuffer); //deepspeech transcription
-    res.json({ transcription }); //send transcription
-    // const [response] = await client.recognize(request);
-    // const transcription = response.results
-    //   .map((result) => result.alternatives[0].transcript)
-    //   .join(" ");
-  } catch (error) {
-    console.error("API error: ", error);
-    res.status(500).json({ error: "Failed to transcribe" });
-  }
-}); //runs when post request is made
-
+// Storage setup for uploads
 const upload = multer({ dest: "uploads/" });
 
-app.post("/upload", upload.single("file"), async (req, res) => {
-  const inputPath = req.file.path; // file uploaded from frontend
-  const outputPath = path.join("uploads", `${req.file.filename}.webm`);
-  try {
-    await new Promise((resolve, reject) =>
-      exec(
-        `ffmpeg -i ${inputPath} -vn -c:a libopus -ar 48000 -ac 1 ${outputPath}`,
-        (err, stdout, stderr) => {
-          if (err) {
-            console.error("Conversion error: ", stderr);
-            return reject("Audio conversion failed");
-          }
-          console.log("Conversion successful");
-          resolve();
-        }
-      )
+app.use(express.json({ limit: "100mb" }));
+app.use(cors());
+
+// In-memory job tracker
+const jobs = {};
+
+// Ensure transcripts directory exists
+const transcriptsDir = path.resolve(__dirname, "transcripts");
+if (!fs.existsSync(transcriptsDir)) {
+  fs.mkdirSync(transcriptsDir);
+}
+
+// Upload and transcribe route
+app.post("/transcribe", upload.single("audio"), (req, res) => {
+  const file = req.file;
+  if (!file) return res.status(400).json({ error: "No file uploaded" });
+
+  const jobId = uuidv4();
+  const tempPath = file.path;
+  const outputPath = `transcripts/${jobId}.wav`;
+  const transcriptPath = `transcripts/${jobId}.txt`;
+
+  // Convert audio to 16-bit PCM WAV using ffmpeg
+  const ffmpeg = require("child_process").spawn;
+  const ffmpegProcess = ffmpeg("ffmpeg", [
+    "-y", // overwrite output
+    "-i",
+    tempPath,
+    "-ar",
+    "16000",
+    "-ac",
+    "1",
+    "-f",
+    "wav",
+    outputPath,
+  ]);
+
+  ffmpegProcess.stderr.on("data", (data) => {
+    console.error(`[ffmpeg stderr]: ${data}`);
+  });
+
+  ffmpegProcess.on("exit", (code) => {
+    if (code !== 0) {
+      console.error("ffmpeg process failed with code", code);
+      return res.status(500).json({ error: "Audio conversion failed" });
+    }
+    // Path to Whisper executable after CMake build
+    const whisperExecutable = path.resolve(
+      __dirname,
+      "whisper/build/bin/whisper-cli"
     );
-    const fileBuffer = await readFile(outputPath);
-    const audioContent = fileBuffer.toString("base64");
+    // Spawn Whisper process and wait for it to finish, then return the transcript immediately
+    const whisperProcess = spawn(whisperExecutable, [
+      "-m",
+      "./whisper/models/ggml-base.en.bin",
+      "-f",
+      outputPath,
+      "-otxt",
+      "-of",
+      transcriptPath.replace(".txt", ""), // whisper appends .txt
+    ]);
+    whisperProcess.stdout &&
+      whisperProcess.stdout.on("data", (data) => {
+        console.log(`[Whisper stdout]: ${data}`);
+      });
+    whisperProcess.stderr &&
+      whisperProcess.stderr.on("data", (data) => {
+        console.error(`[Whisper stderr]: ${data}`);
+      });
+    whisperProcess.on("exit", (code) => {
+      if (code !== 0) {
+        console.error("Whisper process failed with code", code);
+        return res.status(500).json({ error: "Transcription failed" });
+      }
+      fs.access(transcriptPath, fs.constants.F_OK, (accessErr) => {
+        if (accessErr) {
+          console.error("Transcript file does not exist:", accessErr);
+          return res.status(500).json({ error: "Transcript file not found" });
+        }
+        fs.readFile(transcriptPath, "utf8", (err, data) => {
+          if (err) {
+            console.error("Failed to read transcript:", err);
+            return res.status(500).json({ error: "Failed to read transcript" });
+          }
+          res.json({ transcription: data });
+          // Clean up temp files
+          fs.unlink(tempPath, () => {});
+          fs.unlink(outputPath, () => {});
+          fs.unlink(transcriptPath, () => {});
+        });
+      });
+    });
+    whisperProcess.on("error", (err) => {
+      console.error("Failed to start Whisper process:", err);
+      return res.status(500).json({ error: "Failed to start Whisper process" });
+    });
+  });
+});
+// Status route
+app.get("/status/:jobId", (req, res) => {
+  const job = jobs[req.params.jobId];
+  if (!job) return res.status(404).json({ error: "Job not found" });
+  res.json({ status: job.status });
+});
 
-    const audio = { content: audioContent };
-    const config = {
-      encoding: "WEBM_OPUS",
-      sampleRateHertz: 48000, //16000
-      languageCode: "en-UK",
-      // enableAutomaticPunctuation: true,
-    };
-    const request = {
-      audio,
-      config,
-    };
-    const [response] = await client.recognize(request);
-    const transcription = response.results
-      .map((result) => result.alternatives[0].transcript)
-      .join("\n");
-    await fs.unlink(inputPath);
-    await fs.unlink(outputPath);
-
-    res.json({ transcription });
-  } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ error: "Failed to process and transcribe audio" });
+// Fetch transcript route
+app.get("/transcript/:jobId", (req, res) => {
+  const job = jobs[req.params.jobId];
+  if (!job || job.status !== "done") {
+    return res.status(404).json({ error: "Transcript not ready" });
   }
+  res.sendFile(path.resolve(job.transcript));
 });
 
-app.listen(port, () => {
-  //confirms server is running
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// rs to restart nodemon server

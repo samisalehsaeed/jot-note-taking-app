@@ -12,7 +12,7 @@ const AudioRecorder = () => {
   const [transcript, setTranscript] = useState("");
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); //enables mic on browser
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorderRef.current = new MediaRecorder(stream);
     mediaRecorderRef.current.ondataavailable = (event) => {
       audioChunksRef.current.push(event.data);
@@ -28,26 +28,16 @@ const AudioRecorder = () => {
 
   const stopRecording = () => {
     mediaRecorderRef.current.stop();
-    setIsRecording(false); // check if this is the reason why you cannot transcribe
+    setIsRecording(false);
   };
 
   const transcribeAudio = async () => {
-    const blobToBase64 = (blob) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(",")[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    }; // change since deep speech doesnt accept base64
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.wav");
 
-    const base64Audio = await blobToBase64(audioBlob);
     const response = await fetch("http://localhost:5000/transcribe", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ audioContent: base64Audio }),
+      body: formData,
     });
 
     const data = await response.json();
@@ -57,8 +47,6 @@ const AudioRecorder = () => {
 
   return (
     <div className="audio-recorder">
-      {/* make it that when the recording is stopped the transcription is displayed auto */}
-      {/* add a potential loading screen too */}
       <br />
       <button
         type="button"
