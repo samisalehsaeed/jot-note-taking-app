@@ -34,8 +34,3 @@ export default function SaveTranscript() {
 
   return <button onClick={createDoc}>Create Document</button>;
 }
-
-// Used to export the file into a .docx file
-//later on allow users to name their own file
-
-//prop drilling to pass transcription to doc

@@ -63,6 +63,7 @@ const AudioRecorder = () => {
           />
         )}
       </button>
+      <p>Please press "Stop Recording" prior to transcribing the audio</p>
       <br />
       {audioBlob && <audio src={URL.createObjectURL(audioBlob)} controls />}
       <br />
