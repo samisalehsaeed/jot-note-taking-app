@@ -3,8 +3,15 @@ import { Routes, Route } from "react-router-dom";
 import AudioRecorder from "./components/AudioRecorder";
 import UploadAudio from "./components/UploadAudio";
 import Navigation from "./components/Navigation";
+import AuthForm from "./components/AuthForm";
+import { useState } from "react";
 
 function App() {
+  const [isAuth, setIsAuth] = useState(false);
+
+  if (!isAuth){
+    return <AuthForm onAuthComplete={setIsAuth}/>
+  }
   return (
     <>
       <div className="app-container">
@@ -12,6 +19,7 @@ function App() {
         <div className="column2">
           <h1 className="title">JOT</h1>
           <Routes>
+            <Route path="/login"element={<AuthForm/>}/>
             <Route path="/" element={<AudioRecorder />} />
             <Route path="/uploadaudio" element={<UploadAudio />} />
           </Routes>
