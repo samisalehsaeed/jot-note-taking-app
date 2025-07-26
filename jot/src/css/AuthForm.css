@@ -4,7 +4,7 @@
     min-height: 100vh;
     align-items: center;
     background-color: #fff1ad;
-background-image: url("https://www.transparenttextures.com/patterns/lined-paper.png");
+    background-image: url("https://www.transparenttextures.com/patterns/lined-paper.png");
 }
 .auth-container h1{
     margin-top: 5vh;
