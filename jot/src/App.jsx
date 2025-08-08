@@ -17,14 +17,13 @@ function App() {
       <div className="app-container">
         <Navigation />
         <div className="column2">
-          <h1 className="title">JOT</h1>
           <Routes>
             <Route path="/login" element={<AuthForm />} />
             <Route path="/" element={<AudioRecorder />} />
             <Route path="/uploadaudio" element={<UploadAudio />} />
           </Routes>
         </div>
-        <div className="column3" />
+        {/* <div className="column3" /> */}
       </div>
     </>
   );

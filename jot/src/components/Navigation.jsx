@@ -1,28 +1,56 @@
-import { Link } from "react-router-dom";
-import "../css/Navigation.css";
+import { useState } from "react";
+import "../css/Navigation.css"
 
 export default function Navigation() {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  function createTranscript() {
+    console.log("Creating new transcript...");
+    // Add your transcript creation logic here
+  }
+
+  function toggleSidebar() {
+    setIsExpanded(!isExpanded);
+  }
+
   return (
-    <nav className="navigation">
-      <ul>
-        <li>
-          <img
-            className="speech-to-text-icon"
-            src="https://cdn-icons-png.flaticon.com/128/25/25682.png"
-            alt="speech-to-text-icon"
-          />
-          <Link to="/">Speech to Text</Link>
-        </li>
-        <br />
-        <li>
-          <img
-            className="upload-to-text-icon"
-            src="https://cdn-icons-png.flaticon.com/128/5082/5082617.png"
-            alt="upload-to-text-icon"
-          />
-          <Link to="/uploadaudio">Upload to Text</Link>
-        </li>
-      </ul>
-    </nav>
-  );
+    <aside className={`sidebar ${isExpanded ? 'sb-expanded' : 'sb-collapsed'}`}>
+      <button className="collapse-btn" onClick={toggleSidebar}>
+        {isExpanded ? '←' : '→'}
+      </button>
+
+      <nav className="navigation">
+        <ul>
+          <li>
+            <a href="/" className="nav-link">
+              <img
+                className="nav-icon"
+                src="https://cdn-icons-png.flaticon.com/128/25/25682.png"
+                alt="speech-to-text-icon"
+              />
+              <span>Speech to Text</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/uploadaudio" className="nav-link">
+              <img
+                className="nav-icon"
+                src="https://cdn-icons-png.flaticon.com/128/5082/5082617.png"
+                alt="upload-to-text-icon"
+              />
+              <span>Upload to Text</span>
+            </a>
+          </li>
+
+          {/* <li className="new-transcript-container">
+            <button onClick={createTranscript} className="new-transcript-btn">
+              <span className="plus-icon">+</span>
+              <span>New transcript</span>
+            </button>
+          </li> */}
+        </ul>
+      </nav>
+    </aside>
+  )
 }

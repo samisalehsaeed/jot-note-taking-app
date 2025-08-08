@@ -1,5 +1,4 @@
 import { useState, useRef, createContext } from "react";
-import { Link } from "react-router-dom";
 import "../css/AudioRecorder.css";
 import SaveTranscript from "./SaveTranscript";
 
@@ -77,7 +76,6 @@ const AudioRecorder = () => {
           <SaveTranscript />
         </AudioTranscriptContext.Provider>
         <h1>{transcript && <p>{transcript}</p>}</h1>
-        <Link to= "/login">ankle</Link>
       </div>
     </div>
   );

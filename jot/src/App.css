@@ -11,10 +11,10 @@
   /* border: solid white 1px; */
 }
 .column2 {
+  display: flex;
+  justify-content: center;
   width: 200vh;
   background-color: rgb(255, 255, 255);
   text-align: center;
   padding-top: 5vh;
-  padding-left: 10vh;
-  padding-right: 10vh;
 }
