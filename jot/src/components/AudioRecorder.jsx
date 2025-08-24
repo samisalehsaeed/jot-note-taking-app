@@ -1,15 +1,15 @@
 import { useState, useRef, createContext } from "react";
 import "../css/AudioRecorder.css";
 import SaveTranscript from "./SaveTranscript";
+// import TranscriptManager from "./TranscriptManager";
 
 export const AudioTranscriptContext = createContext();
 
-const AudioRecorder = () => {
+const AudioRecorder = ({ audioBlob, transcript, updateTranscript, updateAudioBlob }) => {
+
   const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-  const [transcript, setTranscript] = useState("");
 
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -18,8 +18,10 @@ const AudioRecorder = () => {
       audioChunksRef.current.push(event.data);
     };
     mediaRecorderRef.current.onstop = () => {
+      console.log("updateAudioBlob type:", typeof updateAudioBlob);
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-      setAudioBlob(audioBlob);
+      console.log("Audio Blob:", audioBlob)
+      updateAudioBlob(audioBlob);
       audioChunksRef.current = [];
     };
     mediaRecorderRef.current.start();
@@ -42,8 +44,10 @@ const AudioRecorder = () => {
 
     const data = await response.json();
     console.log("Transcription:", data.transcription);
-    setTranscript(data.transcription);
+    updateTranscript(data.transcription);
+
   };
+
 
   return (
     <div className="audio-recorder">
